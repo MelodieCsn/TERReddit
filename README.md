@@ -3,7 +3,7 @@ Projet S6 L3 info, scrapping reddit earthporn
 
 
 # Commandes Git
-- git clone puis copier adresse dans le terminal
+- copier le lien sur le site puis faire git clone <coller le lien> dans le terminal pour créer un dossier dans lequel vous mettez ce que vous voulez, même si c'est pas du code
 - git branch 'nom nouvelle branche' -> créer nouvelle branche
 - git checkout 'nom de la branche' -> changer de branche
 - git add . -> enregistrer tous les fichiers pour commit
