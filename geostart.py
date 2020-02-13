@@ -14,25 +14,35 @@ import urllib.request, json, unidecode
 #pprint.pprint(tags)
 
 
+def GeonamesSearch(lieu):
+
+    lieu = lieu.replace(" ", "+")       #remplace les espaces par des +
+    lieu = lieu.replace("'", "+")       #remplace les apostrophes par des plus
+    lieu = unidecode.unidecode(lieu)    #pour retirer les accents !attention tester les cédilles
+
+    api = "http://api.geonames.org/searchJSON?q="+lieu+"&maxRows=1&username=projet_TER_reddit"
+    #print(api)
+
+    with urllib.request.urlopen(api) as url:
+        data = json.loads(url.read().decode())
+    #print(data)
+    if data['totalResultsCount'] == 0:
+        return -1
+
+    #TODO if pas de result ou erreur chercher sur wikipedia ?
+
+    long = data['geonames'][0]['lng']
+    lat  = data['geonames'][0]['lat']
+
+    #print("latitude = ",lat)
+    #print("longitude = ",long)
+
+    list=[]
+
+    list.append(lieu)
+    list.append(long)
+    list.append(lat)
+    return list
 
 
-lieu = input("lieu à chercher : ")
-lieu = lieu.replace(" ", "+")       #remplace les espaces par des +
-lieu = lieu.replace("'", "+")       #remplace les apostrophes par des plus
-lieu = unidecode.unidecode(lieu)    #pour retirer les accents !attention tester les cédilles
-
-api = "http://api.geonames.org/searchJSON?q="+lieu+"&maxRows=1&username=projet_TER_reddit"
-print(api)
-
-with urllib.request.urlopen(api) as url:
-    data = json.loads(url.read().decode())
-print(data)
-
-#TODO if pas de result ou erreur chercher sur wikipedia ?
-
-long = data['geonames'][0]['lng']
-lat  = data['geonames'][0]['lat']
-
-
-print("longitude = ",long)
-print("latitude = ",lat)
+print(GeonamesSearch('paris'))
