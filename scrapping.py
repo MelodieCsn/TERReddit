@@ -1,5 +1,5 @@
 from copy import deepcopy
-
+import urllib.request, json, unidecode
 import praw
 import pandas as pd
 import json
@@ -34,12 +34,13 @@ def isClean(title):
     return True
 
 def properNoun(lexical):
-    liste = []
+    liste =""
     for couple in lexical:
         if couple[1]=="NNP":
-            liste.append(couple)
-    return liste
+            liste+=couple[0]+" "
+    return liste.strip()
 def cleanTitle(title, step):
+    if step==1:
         title = str(title)
         title = title.strip()
 
@@ -102,6 +103,36 @@ def cleanTitle(title, step):
             return title
 
 
+def geoNamesSearch(lieu):
+
+    lieu = lieu.replace(" ", "+")       #remplace les espaces par des +
+    lieu = lieu.replace("'", "+")       #remplace les apostrophes par des plus
+    lieu = unidecode.unidecode(lieu)    #pour retirer les accents !attention tester les cédilles
+
+    api = "http://api.geonames.org/searchJSON?q="+lieu+"&maxRows=1&username=projet_TER_reddit"
+    #print(api)
+
+    with urllib.request.urlopen(api) as url:
+        data = json.loads(url.read().decode())
+    #print(data)
+    if data['totalResultsCount'] == 0:
+        return -1
+
+    #TODO if pas de result ou erreur chercher sur wikipedia ?
+
+    long = data['geonames'][0]['lng']
+    lat  = data['geonames'][0]['lat']
+
+    #print("latitude = ",lat)
+    #print("longitude = ",long)
+
+    list=[]
+
+    list.append(lieu)
+    list.append(long)
+    list.append(lat)
+    return list
+
 
 
 def collectionFromReddit():
@@ -122,6 +153,8 @@ def collectionFromReddit():
         lexical = nltk.pos_tag(lexical)
         print("lexical:",lexical)
         print("proper noun:", properNoun(lexical))
+        print("geoNames:",geoNamesSearch(properNoun(lexical)))
+        print("-------------------------------------")
 
         posts.append([str(post.title), afterClean, post.score, post.id, str(post.subreddit), ""+str(post.url), int(post.num_comments), str(post.selftext).strip(' \\'), int(post.created)])
     posts = pd.DataFrame(posts,columns=['title', 'afterClean','score', 'id', 'subreddit', 'url', 'num_comments', 'body', 'created'])
