@@ -203,7 +203,7 @@ def collectionFromReddit():
                     coordinate = geoNamesSearch(locateFormed(loc))
                     if coordinate != -1:
                         ok = ok + 1
-                print("geoNames:",coordinate)
+                    print("geoNames:",coordinate)
         print("-------------------------------------")
 
         posts.append([str(post.title), afterClean, post.score, post.id, str(post.subreddit), ""+str(post.url), int(post.num_comments), str(post.selftext).strip(' \\'), int(post.created)])
