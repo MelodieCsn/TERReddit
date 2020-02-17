@@ -109,7 +109,7 @@ def cleanTitle(title, step):
                 indice = title.find("×")
 
         if indice >=0:
-            chain1 = str(title[:indice-1])
+            chain1 = str(title[:indice])
             chain2 = str(title[indice+1:])
             if len(chain1) > 0:
                 while chain1[-1].isnumeric() or chain1[-1]==" ":
@@ -140,19 +140,19 @@ def geoNamesSearch(lieu):
     if data['totalResultsCount'] == 0:
         return -1
 
-    #TODO if pas de result ou erreur chercher sur wikipedia ?
-
     long = data['geonames'][0]['lng']
     lat  = data['geonames'][0]['lat']
+    contry = data['geonames'][0]["countryName"]
+    code = data['geonames'][0]["countryCode"]
 
-    #print("latitude = ",lat)
-    #print("longitude = ",long)
 
     list=[]
 
     list.append(lieu)
     list.append(long)
     list.append(lat)
+    list.append(contry)
+    list.append(code)
     return list
 
 def wordCombination(listOfWords):
