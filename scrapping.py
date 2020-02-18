@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import requests
 import webbrowser
 from nltk.corpus import ieer
+import math
 
 
 limit = 35
@@ -125,6 +126,19 @@ def cleanTitle(title, step):
             return title
 
 
+def distanceBetweenCordinates(coord1, coord2):
+    coord1[0] = math.radians(coord1[0])
+    coord1[1] = math.radians(coord1[1])
+    coord2[0] = math.radians(coord2[0])
+    coord2[1] = math.radians(coord2[1])
+    SPHERE_TERRE = 6378137
+    DIST_LON = (coord2[0] - coord1[0]) / 2
+    DIST_LAT = (coord2[1] - coord1[1]) / 2
+    ETAPE1 = (math.sin(DIST_LAT)**2) + math.cos(coord1[1]) * math.cos(coord2[1]) * (math.sin(DIST_LON)**2)
+    ETAPE2 = 2 * math.atan2(math.sqrt(ETAPE1), math.sqrt(1 - ETAPE1))
+    resultat = (SPHERE_TERRE * ETAPE2) / 1000
+    return resultat
+
 def geoNamesSearch(lieu):
 
     lieu = lieu.replace(" ", "+")       #remplace les espaces par des +
@@ -136,14 +150,14 @@ def geoNamesSearch(lieu):
 
     with urllib.request.urlopen(api) as url:
         data = json.loads(url.read().decode())
-    #print(data)
+    #print("Taille:", len(data))
     if data['totalResultsCount'] == 0:
         return -1
 
     long = data['geonames'][0]['lng']
     lat  = data['geonames'][0]['lat']
-    contry = data['geonames'][0]["countryName"]
-    code = data['geonames'][0]["countryCode"]
+    #contry = data['geonames'][0]["countryName"]
+    #code = data['geonames'][0]["countryCode"]
 
 
     list=[]
@@ -151,8 +165,8 @@ def geoNamesSearch(lieu):
     list.append(lieu)
     list.append(long)
     list.append(lat)
-    list.append(contry)
-    list.append(code)
+    # list.append(contry)
+    # list.append(code)
     return list
 
 def wordCombination(listOfWords):
@@ -211,18 +225,3 @@ def collectionFromReddit():
     print(ok,"Trouvés sur",limit)
 
 collectionFromReddit()
-
-
-# text = 'hello world'
-# text = urllib.parse.quote_plus(text)
-# url = 'https://www.bing.com/search?q=' + text
-#
-# headers = {
-#             "user-Agent": 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.88 Safari/537.36'
-#         }
-#
-# page = requests.get(url, headers=headers)
-# soup = BeautifulSoup(page.content, 'html.parser')
-# print(soup.get_text())
-
-
