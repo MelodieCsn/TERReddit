@@ -77,8 +77,6 @@ def cleanTitle(title, step):
         title = title.replace("(oc), ", "")
         title = title.replace("oc,", "")
         title = title.replace(",oc ", "")
-        title = title.replace("IG", "")
-        title = title.replace("ig", "")
         title = title.replace(":", "")
         title = title.replace("[oc]", "")
         title = title.replace("(", "")
@@ -87,6 +85,8 @@ def cleanTitle(title, step):
         title = title.replace("]", "")
         title=title.replace(" OC ","")
         title = title.replace(" oc ", "")
+        title = title.replace(" IG ", "")
+        title = title.replace(" ig ", "")
         if title[:3]=="OC " or title[:3]=="oc ":
             title = title[3:]
         title = title.strip()
@@ -112,7 +112,7 @@ def cleanTitle(title, step):
             if indice < 0:
                 indice = title.find("×")
 
-        if indice >=0:
+        if indice >=0 and ((indice-1)>=0 and not title[indice-1].isalpha()) and ((indice+1)<len(title) and not title[indice+1].isalpha()):
             chain1 = str(title[:indice])
             chain2 = str(title[indice+1:])
             if len(chain1) > 0:
