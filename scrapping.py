@@ -46,7 +46,7 @@ def properNoun(lexical):
     noun =""
 
     for i in range(len(lexical)):
-        if lexical[i][1]=="NNP":
+        if lexical[i][1]=="NNP" and str(lexical[i][0]).isalpha():
             noun+=lexical[i][0]+" "
         elif (i+1) < len(lexical) and str(lexical[i][0]).isalpha() and lexical[i-1][1]=="NNP" and lexical[i+1][1]=="NNP":
             noun += lexical[i][0] + " "
@@ -133,7 +133,7 @@ def cleanTitle(title, step):
             title = title.strip()
             print("After clean :", title)
             return title
-
+    return title
 
 def distanceBetweenCordinates(coord1, coord2):
     coord1[0] = math.radians(coord1[0])
@@ -148,6 +148,40 @@ def distanceBetweenCordinates(coord1, coord2):
     resultat = (SPHERE_TERRE * ETAPE2) / 1000
     return resultat
 
+def existNameSocialNetwork(title):
+
+    title = str(title)
+    indice = title.find("Insta")
+    if indice < 0:
+        indice = title.find("Instagram")
+        if indice < 0:
+            indice = title.find("instagram")
+            if indice < 0:
+                indice = title.find("instaGram")
+                if indice < 0:
+                    indice = title.find("insta")
+                    if indice < 0:
+                        indice = title.find("Facebook")
+                        if indice < 0:
+                            indice = title.find("facebook")
+                            if indice < 0:
+                                indice = title.find("FaceBook")
+                                if indice < 0:
+                                    indice = title.find("Fb")
+                                    if indice < 0:
+                                        indice = title.find("fb")
+                                        if indice < 0:
+                                            indice = title.find("FB")
+
+
+    if indice >= 0:
+        indice = indice + 1
+        a = title[:indice-1]
+        while indice < len(title) and title[indice] != " ":
+            indice = indice + 1
+        title = a+title[indice:]
+        return existNameSocialNetwork(title)
+    return title
 def geoNamesSearch(lieu):
 
     lieu = lieu.replace(" ", "+")       #remplace les espaces par des +
@@ -200,7 +234,7 @@ def collectionFromReddit():
     for post in ml_subreddit.hot(limit=limit):
         print("Original title :",post.title)
         step =1
-        afterClean = deepcopy(post.title)
+        afterClean = existNameSocialNetwork(deepcopy(post.title))
         afterClean=cleanTitle(afterClean,step)
         print("It's cleaned ?",isClean(afterClean))
         while not isClean(afterClean) and step <=2:
@@ -234,3 +268,4 @@ def collectionFromReddit():
     print(ok,"Trouvés sur",limit)
 
 collectionFromReddit()
+
