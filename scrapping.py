@@ -23,34 +23,34 @@ def isClean(title):
     title=str(title)
     if title.find("x") >= 0:
         k= title.find("x")
-        if (k-1) >=0 and title[k-1].isnumeric() or title[k-1]==" ":
+        if (k-1) >=0 and (not title[k-1].isalpha()):
             return False
-        elif (k+1) < len(title) and (title[k+1].isnumeric() or title[k+1]==" "):
+        elif (k+1) < len(title) and ( not title[k+1].isalpha()):
             return False
     elif title.find("X") >= 0:
         k= title.find("X")
-        if (k-1) >=0 and (title[k-1].isnumeric() or title[k-1]==" "):
+        if (k-1) >=0 and (not title[k-1].isalpha()):
             return False
-        elif (k+1) < len(title) and title[k+1].isnumeric() or title[k+1]==" ":
+        elif (k+1) < len(title) and (not title[k+1].isalpha()):
             return False
 
     elif title.find("×") >= 0:
         k= title.find("×")
-        if (k-1) >=0 and (title[k-1].isnumeric() or title[k-1]==" "):
+        if (k-1) >=0 and (not title[k-1].isalpha()):
             return False
-        elif (k+1) < len(title) and title[k+1].isnumeric() or title[k+1]==" ":
+        elif (k+1) < len(title) and (not title[k+1].isalpha()):
             return False
     return True
 
 def properNoun(lexical):
-    liste =""
+    noun =""
 
     for i in range(len(lexical)):
         if lexical[i][1]=="NNP":
-            liste+=lexical[i][0]+" "
+            noun+=lexical[i][0]+" "
         elif (i+1) < len(lexical) and str(lexical[i][0]).isalpha() and lexical[i-1][1]=="NNP" and lexical[i+1][1]=="NNP":
-            liste += lexical[i][0] + " "
-    return liste.strip()
+            noun += lexical[i][0] + " "
+    return noun.strip()
 
 def locateFormed(location):
     list = ""
@@ -87,6 +87,8 @@ def cleanTitle(title, step):
         title = title.replace("]", "")
         title=title.replace(" OC ","")
         title = title.replace(" oc ", "")
+        if title[:3]=="OC " or title[:3]=="oc ":
+            title = title[3:]
         title = title.strip()
         if (title.find("@") >= 0):
             indice = title.find("@")
@@ -103,6 +105,7 @@ def cleanTitle(title, step):
         print("After clean :",title)
         return title
     if step==2:
+
         indice = title.find("x")
         if indice < 0:
             indice = title.find("X")
@@ -113,11 +116,17 @@ def cleanTitle(title, step):
             chain1 = str(title[:indice])
             chain2 = str(title[indice+1:])
             if len(chain1) > 0:
-                while chain1[-1].isnumeric() or chain1[-1]==" ":
+                while not chain1[-1].isalpha():
                     chain1 = chain1[:-1]
+                while not chain1[0].isalpha():
+                    chain1 = chain1[1:]
+
             if len(chain2) > 0:
-                while chain2[0].isnumeric() or chain2[0]==" ":
+                while not chain2[0].isalpha():
                     chain2 = chain2[1:]
+                while not chain2[-1].isalpha():
+                    chain2 = chain2[:-1]
+
             title = chain1+" "+chain2
             while not title[-1].isalpha():
                 title = title[:-1]
