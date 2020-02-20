@@ -133,6 +133,9 @@ def cleanTitle(title, step):
             title = title.strip()
             print("After clean :", title)
             return title
+        elif (indice + 1) == len(title) and (indice-1)>= 0 and  not title[indice - 1].isalpha():
+            title = title[:-2]
+
     return title
 
 def distanceBetweenCordinates(coord1, coord2):
@@ -220,10 +223,41 @@ def wordCombination(listOfWords):
 def findLocation(liste):
     list = []
     for triple in liste:
-        if triple[1]=="GSP" or triple[1]=="GPE" or triple[1]=="ORGANIZATION" or triple[1]=="PERSON":
+        if len(triple[0][1]) >2 and  (triple[1]=="GSP" or triple[1]=="GPE" or triple[1]=="ORGANIZATION" or triple[1]=="PERSON"):
             list.append(triple)
     return list
 
+def equalsTextList(list1, list2):
+    if len(list1)!=len(list2):
+        return  False
+    for i in range(len(list2)):
+        if list1[i]!=list2[i][0][0]:
+            return False
+    return True
+
+def middleCheck(list1, list2):
+
+    find = geoNamesSearch(locateFormed(list1))
+    if find != -1:
+        return find
+    find = geoNamesSearch(locateFormed(list2))
+    if find != -1:
+        return find
+    i = 0
+    composed = ""
+    for word in reversed(list1):
+        composed = word[0][0] +" "+ composed+(" " if len(composed)>0 else "") + list2[i][0][0]
+        i = i+1
+        find = geoNamesSearch(locateFormed(composed))
+        if find != -1:
+            return  find
+    while i < len(list2):
+        composed  += " " + list2[i][0][0]
+        i = i+1
+        find = geoNamesSearch(locateFormed(composed))
+        if find != -1:
+            return find
+    return -1
 
 def collectionFromReddit():
     ok = 0
@@ -254,13 +288,35 @@ def collectionFromReddit():
             coordinate = geoNamesSearch(proper)
             print("geoNames:", coordinate)
             ok = ok + 1
+            check = True
             if coordinate == -1 :
                 ok = ok - 1
-                if len(proper.split()) != len(loc) and len(loc) != 0:
+                if not equalsTextList(proper.split(),loc) and len(loc)>1:
                     coordinate = geoNamesSearch(locateFormed(loc))
                     if coordinate != -1:
                         ok = ok + 1
+                        check = False
                     print("geoNames:",coordinate)
+
+                    if check:
+                        debut = loc[:len(loc) // 2]
+                        fin = loc[len(loc) // 2:]
+
+                        coordinate = middleCheck(debut,fin)
+                        if coordinate != -1:
+                            ok = ok + 1
+                        print("geonames:",coordinate)
+                elif len(loc)>1:
+                    debut = loc[:len(loc) // 2]
+                    fin = loc[len(loc) // 2:]
+
+                    coordinate = middleCheck(debut, fin)
+                    if coordinate != -1:
+                        ok = ok + 1
+                    print("geonames:", coordinate)
+
+
+
         print("-------------------------------------")
 
         posts.append([str(post.title), afterClean, post.score, post.id, str(post.subreddit), ""+str(post.url), int(post.num_comments), str(post.selftext).strip(' \\'), int(post.created)])
