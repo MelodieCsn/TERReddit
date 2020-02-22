@@ -224,8 +224,12 @@ def geoNamesSearch(lieu):
 
     long = data['geonames'][0]['lng']
     lat  = data['geonames'][0]['lat']
-    #contry = data['geonames'][0]["countryName"]
-    #code = data['geonames'][0]["countryCode"]
+    contry = ""
+    code = ""
+    if "countryName" in data['geonames'][0]:
+        contry = data['geonames'][0]["countryName"]
+    if "countryCode" in data['geonames'][0]:
+        code = data['geonames'][0]["countryCode"]
 
 
     list=[]
@@ -233,8 +237,11 @@ def geoNamesSearch(lieu):
     list.append(lieu)
     list.append(long)
     list.append(lat)
-    # list.append(contry)
-    # list.append(code)
+    if contry!="":
+        list.append(contry)
+    if code!="":
+         list.append(code)
+
     return list
 
 
