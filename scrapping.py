@@ -40,6 +40,13 @@ def isClean(title):
             return False
         elif (k+1) < len(title) and (not title[k+1].isalpha()):
             return False
+
+    elif title.find("*") >= 0:
+            k = title.find("*")
+            if (k - 1) >= 0 and (not title[k - 1].isalpha()):
+                return False
+            elif (k + 1) < len(title) and (not title[k + 1].isalpha()):
+                return False
     return True
 
 def properNoun(lexical):
@@ -50,6 +57,13 @@ def properNoun(lexical):
             noun+=lexical[i][0]+" "
         elif (i+1) < len(lexical) and str(lexical[i][0]).isalpha() and lexical[i-1][1]=="NNP" and lexical[i+1][1]=="NNP":
             noun += lexical[i][0] + " "
+    if noun=="":
+        for i in range(len(lexical)):
+            if (lexical[i][1] == "NN" or lexical[i][1] == "NNS") and str(lexical[i][0]).isalpha() and str(lexical[i][0])[0].isupper():
+                noun += lexical[i][0] + " "
+            elif ((i + 1) < len(lexical) and (i-1) >=0) and lexical[i][1]!="IN" and str(lexical[i][0]).isalpha() and ((lexical[i-1][1] == "NN" and lexical[i + 1][1] == "NN") or (lexical[i-1][1] == "NNS" and lexical[i + 1][1] == "NNS")):
+                noun += lexical[i][0] + " "
+
     return noun.strip()
 
 def locateFormed(location):
@@ -111,6 +125,9 @@ def cleanTitle(title, step):
             indice = title.find("X")
             if indice < 0:
                 indice = title.find("×")
+                if indice < 0:
+                    indice = title.find("*")
+
 
         if indice >=0 and ((indice-1)>=0 and not title[indice-1].isalpha()) and ((indice+1)<len(title) and not title[indice+1].isalpha()):
             chain1 = str(title[:indice])
@@ -120,12 +137,16 @@ def cleanTitle(title, step):
                     chain1 = chain1[:-1]
                 while not chain1[0].isalpha():
                     chain1 = chain1[1:]
+            else:
+                chain1 = ""
 
-            if len(chain2) > 0:
+            if len(chain2) > 1:
                 while not chain2[0].isalpha():
                     chain2 = chain2[1:]
                 while not chain2[-1].isalpha():
                     chain2 = chain2[:-1]
+            else:
+                chain2 = ""
 
             title = chain1+" "+chain2
             while not title[-1].isalpha():
@@ -135,6 +156,7 @@ def cleanTitle(title, step):
             return title
         elif (indice + 1) == len(title) and (indice-1)>= 0 and  not title[indice - 1].isalpha():
             title = title[:-2]
+        print("After clean :", title)
 
     return title
 
@@ -215,9 +237,6 @@ def geoNamesSearch(lieu):
     # list.append(code)
     return list
 
-def wordCombination(listOfWords):
-    list = []
-
 
 
 def findLocation(liste):
@@ -237,12 +256,27 @@ def equalsTextList(list1, list2):
 
 def middleCheck(list1, list2):
 
-    find = geoNamesSearch(locateFormed(list1))
-    if find != -1:
-        return find
+    #check ineteressant
+    composed = locateFormed(list2)
+    i = len(list1)-1
+    while i > 0 :
+        composed =list1[i][0][0]+" "+composed
+        find = geoNamesSearch(composed)
+        if find != -1:
+            return find
+        i= i-1
+
+        # check du list2
     find = geoNamesSearch(locateFormed(list2))
     if find != -1:
         return find
+
+    #check pour list1
+    find = geoNamesSearch(locateFormed(list1))
+    if find != -1:
+        return find
+
+    #check dichotomique
     i = 0
     composed = ""
     for word in reversed(list1):
@@ -291,7 +325,7 @@ def collectionFromReddit():
             check = True
             if coordinate == -1 :
                 ok = ok - 1
-                if not equalsTextList(proper.split(),loc) and len(loc)>1:
+                if not equalsTextList(proper.split(),loc) and len(loc)>0:
                     coordinate = geoNamesSearch(locateFormed(loc))
                     if coordinate != -1:
                         ok = ok + 1
