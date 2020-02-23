@@ -289,7 +289,7 @@ def middleCheck(list1, list2):
     for word in reversed(list1):
         composed = word[0][0] +" "+ composed+(" " if len(composed)>0 else "") + list2[i][0][0]
         i = i+1
-        find = geoNamesSearch(locateFormed(composed))
+        find = geoNamesSearch(composed)
         if find != -1:
             return  find
     while i < len(list2):
@@ -359,10 +359,12 @@ def collectionFromReddit():
 
 
         print("-------------------------------------")
-
-        posts.append([str(post.title), afterClean, post.score, post.id, str(post.subreddit), ""+str(post.url), int(post.num_comments), str(post.selftext).strip(' \\'), int(post.created)])
-    posts = pd.DataFrame(posts,columns=['title', 'afterClean','score', 'id', 'subreddit', 'url', 'num_comments', 'body', 'created'])
+        if coordinate!=-1 and len(coordinate)== 5:
+            posts.append([str(post.title), afterClean, str(post.subreddit), ""+str(post.url), str(post.selftext).strip(' \\'),coordinate[0],float(coordinate[1]),float(coordinate[2]),coordinate[3],coordinate[4]])
+    posts = pd.DataFrame(posts,columns=['title', 'afterClean', 'subreddit', 'url', 'body','location','longitude','latitude','contryName','contryCode'])
     print(ok,"Trouvés sur",limit)
+    print(posts.to_json("fic.json", orient='index'))
+
 
 collectionFromReddit()
 
