@@ -133,23 +133,23 @@ def cleanTitle(title, step):
             chain1 = str(title[:indice])
             chain2 = str(title[indice+1:])
             if len(chain1) > 0:
-                while not chain1[-1].isalpha():
+                while len(chain1)>0 and not chain1[-1].isalpha():
                     chain1 = chain1[:-1]
-                while not chain1[0].isalpha():
+                while len(chain1)>0 and not chain1[0].isalpha():
                     chain1 = chain1[1:]
             else:
                 chain1 = ""
 
             if len(chain2) > 1:
-                while not chain2[0].isalpha():
+                while len(chain2)>0 and not chain2[0].isalpha():
                     chain2 = chain2[1:]
-                while not chain2[-1].isalpha():
+                while len(chain2)>0 and not chain2[-1].isalpha():
                     chain2 = chain2[:-1]
             else:
                 chain2 = ""
 
             title = chain1+" "+chain2
-            while not title[-1].isalpha():
+            while len(title)>0 and not title[-1].isalpha():
                 title = title[:-1]
             title = title.strip()
             print("After clean :", title)
