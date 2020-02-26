@@ -278,10 +278,11 @@ def middleCheck(list1, list2):
     if find != -1:
         return find
 
-    #check pour list1
-    find = geoNamesSearch(locateFormed(list1))
-    if find != -1:
-        return find
+        # check pour list1
+    if len(list1) >= 2:
+            find = geoNamesSearch(locateFormed(list1))
+            if find != -1:
+                return find
 
     #check dichotomique
     i = 0
@@ -292,10 +293,17 @@ def middleCheck(list1, list2):
         find = geoNamesSearch(composed)
         if find != -1:
             return  find
-    while i < len(list2):
-        composed  += " " + list2[i][0][0]
-        i = i+1
-        find = geoNamesSearch(locateFormed(composed))
+        while i < len(list2):
+            composed  += " " + list2[i][0][0]
+            i = i+1
+            find = geoNamesSearch(locateFormed(composed))
+            if find != -1:
+                return find
+    composed = ""
+    for word in reversed(list2):
+        composed+=word[0][0]
+        find = geoNamesSearch(composed)
+        composed +=" "
         if find != -1:
             return find
     return -1
@@ -363,7 +371,7 @@ def collectionFromReddit():
             posts.append([str(post.title), afterClean, str(post.subreddit), ""+str(post.url), str(post.selftext).strip(' \\'),coordinate[0],float(coordinate[1]),float(coordinate[2]),coordinate[3],coordinate[4]])
     posts = pd.DataFrame(posts,columns=['title', 'afterClean', 'subreddit', 'url', 'body','location','longitude','latitude','contryName','contryCode'])
     print(ok,"Trouvés sur",limit)
-    print(posts.to_json("fic.json", orient='index'))
+    posts.to_json("fic.json", orient='index')
 
 
 collectionFromReddit()
