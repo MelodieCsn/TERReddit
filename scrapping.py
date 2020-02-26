@@ -208,7 +208,6 @@ def existNameSocialNetwork(title):
         return existNameSocialNetwork(title)
     return title
 def geoNamesSearch(lieu):
-
     lieu = lieu.replace(" ", "+")       #remplace les espaces par des +
     lieu = lieu.replace("'", "+")       #remplace les apostrophes par des plus
     lieu = unidecode.unidecode(lieu)    #pour retirer les accents !attention tester les cédilles
@@ -226,10 +225,12 @@ def geoNamesSearch(lieu):
     lat  = data['geonames'][0]['lat']
     contry = ""
     code = ""
-    if "countryName" in data['geonames'][0]:
+    if "countryName" in data['geonames'][0] and "countryCode" in data['geonames'][0]:
         contry = data['geonames'][0]["countryName"]
-    if "countryCode" in data['geonames'][0]:
         code = data['geonames'][0]["countryCode"]
+    else:
+        contry = data['geonames'][0]["fcodeName"]
+        code = data['geonames'][0]["fcode"]
 
 
     list=[]
@@ -237,10 +238,9 @@ def geoNamesSearch(lieu):
     list.append(lieu)
     list.append(long)
     list.append(lat)
-    if contry!="":
-        list.append(contry)
-    if code!="":
-         list.append(code)
+
+    list.append(contry)
+    list.append(code)
 
     return list
 
