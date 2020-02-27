@@ -23,6 +23,13 @@
 				</div>
 			</div>
 		</div>
+
+
+		<?php
+include ('footer.php');
+include ('script.php');
+
+?>
 	</body>
 
 	<script type='text/javascript'>
@@ -32,12 +39,28 @@
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 		}).addTo(map);
 
-/*			L.marker([51.5, -0.09]).addTo(map)
-		.bindPopup('A pretty CSS3 popup.<br> Easily customizable.')
-		.openPopup();*/
+
+    function affiche(objet)
+    {
+      console.log(objet);
+    }
+
+
+    $().ready(function(){
+
+       $.getJSON("fic.json",function(data)
+        {
+          $.each(data,function(i,objet)
+          {
+            	L.marker([objet.latitude, objet.longitude]).addTo(map)
+				.bindPopup(objet.afterClean)
+				.openPopup();
+
+
+          })
+        })
+    })
+
+
 	</script>
 
-<?php
-	include("footer.php");
-	include("script.php");
-?>
