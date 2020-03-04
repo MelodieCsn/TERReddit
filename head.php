@@ -9,5 +9,4 @@
 <meta charset="utf-8">
 <title>Scrapping Reddit</title>
 
-   <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-<link rel='stylesheet' type='text/css' href='jquery-ui-1.12.1/jquery-ui.min.css'>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
