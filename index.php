@@ -18,6 +18,11 @@
 				</div>
 
 				<div class='col-md-3 px-3 bg-secondary text-light'>
+					<div>
+						<a id='img' href='https://www.cartograf.fr/images/map/monde-satellites/carte_monde_satellite_topographie.jpg' target='_blank'>
+							<img class='pt-2 mb-3' style='width: 100%; height: 200px;' src='https://www.cartograf.fr/images/map/monde-satellites/carte_monde_satellite_topographie.jpg'>
+						</a>
+					</div>
 					<div id='title'>
 						<h5><u>Titre du post Reddit :</u></h5>
 						<p id='t'></p>
@@ -51,29 +56,24 @@
 
 	    $().ready(function(){
 	    	var markers = L.markerClusterGroup(); //on crée le cluster
-	    	
+
 	    	$.getJSON("lieu.json",function(data){
 	    		$.each(data,function(index,objet){
-	    			var m = L.marker([objet.latitude, objet.longitude])/*.addTo(map)*/
+	    			var m = L.marker([objet.latitude, objet.longitude])
 	    			.bindPopup(objet.afterClean)
 	    			.on('click', function(){
-	    				/*console.log($('#title:first-child'));*/
-	    				$('#t').remove();
-    					$('#a').remove();
-    					$('#l').remove();
-    					$('#title').append("<p id='t'>"+objet.title+"</p>");
-    					$('#afterClean').append("<p id='a'>"+objet.afterClean+"</p>");
-    					$('#location').append("<p id='l'>"+objet.location+"</p>");
+	    				$('#img').replaceWith("<a id='img' href='"+objet.url+"' target='_blank'><img class='pt-2 mb-3' style='width: 100%; height: 200px;' src='"+objet.url+"'></a>");
+	    				$('#t').replaceWith("<p id='t'>"+objet.title+"</p>");
+    					$('#a').replaceWith("<p id='a'>"+objet.afterClean+"</p>");
+    					$('#l').replaceWith("<p id='l'>"+objet.location+"</p>");
 	    			});
-
-	    			markers.addLayer(m); //on ajoute chaque marqueur au cluster 
-
+	    				markers.addLayer(m); //on ajoute chaque marqueur au cluster 
 	    		});
-	    	map.addLayer(markers); //on ajoute tout ça à la map
+	    		map.addLayer(markers); //on ajoute tout ça à la map
 	    	});
 	    });
 
-	    /*console.log(document.getElementById('title').value);*/
+	    console.log(document.getElementById('title').value);
 	</script>
 
 </html>

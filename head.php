@@ -7,11 +7,12 @@
 <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js" integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew==" crossorigin=""></script>
 
 <!-- Leaflet clusters -->
-<style type="text/css" src='./Leaflet.markercluster-1.1.0/dist/MarkerCluster.css'></style>
 
-<style type="text/css" src='./Leaflet.markercluster-1.1.0/dist/MarkerCluster.Default.css'></style>
+<link rel="stylesheet" type="text/css" href="./leaflet.markercluster/dist/MarkerCluster.css">
 
-<script src="./Leaflet.markercluster-1.1.0/dist/leaflet.markercluster.js"></script>
+<link rel="stylesheet" type="text/css" href="./leaflet.markercluster/dist/MarkerCluster.default.css">
+
+<script src="./leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 
 
