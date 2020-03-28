@@ -2,6 +2,7 @@ from copy import deepcopy
 import urllib.request, json, unidecode
 import praw
 import pandas as pd
+
 import json
 import nltk
 from nltk.corpus import treebank
@@ -15,8 +16,22 @@ from nltk.corpus import ieer
 import math
 
 
-limit = 35
 
+limit = 300
+
+def addInUsa(text):
+    text =text+" -> 1\n"
+    print(text)
+    with open("USA.rd","a") as file1:
+        file1.write(text)
+        file1.close()
+
+def addInOthers(text):
+    text = text+" -> 0\n"
+    print(text)
+    with open("Others.rd","a") as file2:
+        file2.write(text)
+        file2.close()
 
 
 def isClean(title):
@@ -76,12 +91,29 @@ def cleanTitle(title, step):
         title = str(title)
         title = title.strip()
 
-        motif = re.compile(r"\d{3,}")
+        motif = re.compile(r"\d{1,}")
         list = motif.findall(title)
         if len(list)>0:
             for out in list:
                 title = title.replace(out,"")
+        indice = title.find("IG")
+        if indice >= 0:
+            if (indice - 1) >= 0  and not title[indice - 1].isalpha():
+                title = title.replace("IG", "")
+        indice = title.find("ig")
+        if indice >= 0:
+            if (indice - 1) >= 0 and not title[indice - 1].isalpha() :
+                title = title.replace("ig", "")
 
+        motif = re.compile(r"[a-zA-Z]+[0-9]+")
+        list = motif.findall(title)
+        if len(list) > 0:
+            for out in list:
+                title = title.replace(out, "")
+
+        title = title.replace("😉", "")
+        title = title.replace("️","")
+        title = title.replace("❤", "")
         title=title.replace("[OC]","")
         title = title.replace("{OC}", "")
         title = title.replace("{oc}", "")
@@ -99,8 +131,16 @@ def cleanTitle(title, step):
         title = title.replace("]", "")
         title=title.replace(" OC ","")
         title = title.replace(" oc ", "")
-        title = title.replace(" IG ", "")
-        title = title.replace(" ig ", "")
+        indice = title.find("OC")
+        if indice >= 0 and (indice+2)== len(title):
+            title = title.replace("OC", "")
+        indice = title.find("oc")
+        if indice >= 0 and (indice + 2) == len(title):
+            title = title.replace("oc", "")
+
+
+
+
         if title[:3]=="OC " or title[:3]=="oc ":
             title = title[3:]
         title = title.strip()
@@ -225,12 +265,15 @@ def geoNamesSearch(lieu):
     lat  = data['geonames'][0]['lat']
     contry = ""
     code = ""
+    name = ""
     if "countryName" in data['geonames'][0] and "countryCode" in data['geonames'][0]:
         contry = data['geonames'][0]["countryName"]
         code = data['geonames'][0]["countryCode"]
+        name = data['geonames'][0]["name"]
     else:
         contry = data['geonames'][0]["fcodeName"]
         code = data['geonames'][0]["fcode"]
+        name = data['geonames'][0]["name"]
 
 
     list=[]
@@ -238,10 +281,9 @@ def geoNamesSearch(lieu):
     list.append(lieu)
     list.append(long)
     list.append(lat)
-
     list.append(contry)
     list.append(code)
-
+    list.append(name)
     return list
 
 
@@ -293,12 +335,13 @@ def middleCheck(list1, list2):
         find = geoNamesSearch(composed)
         if find != -1:
             return  find
-        while i < len(list2):
-            composed  += " " + list2[i][0][0]
-            i = i+1
-            find = geoNamesSearch(locateFormed(composed))
-            if find != -1:
-                return find
+
+    while i < len(list2):
+        composed  += " " + list2[i][0][0]
+        i = i+1
+        find = geoNamesSearch(locateFormed(composed))
+        if find != -1:
+            return find
     composed = ""
     for word in reversed(list2):
         composed+=word[0][0]
@@ -307,6 +350,26 @@ def middleCheck(list1, list2):
         if find != -1:
             return find
     return -1
+def fusion():
+    tab = []
+    p = pd.read_json("reddit.json")
+    taille = p.shape[1] + 1
+    for i in p:
+        tab.append([p[i].title, p[i].afterClean, p[i].subreddit, p[i].url, p[i].body, p[i].location, p[i].longitude,
+                    p[i].latitude, p[i].contryName, p[i].contryCode, p[i].name])
+
+    f = pd.read_json("fusion.json")
+    for i in f:
+        tab.append([f[i].title, f[i].afterClean, f[i].subreddit, f[i].url, f[i].body, f[i].location, f[i].longitude,
+                    f[i].latitude, f[i].contryName,
+                    f[i].contryCode, f[i].name])
+
+    tab = pd.DataFrame(tab,
+                       columns=['title', 'afterClean', 'subreddit', 'url', 'body', 'location', 'longitude', 'latitude',
+                                'contryName', 'contryCode', 'name'])
+
+    tab.to_json("reddit.json", orient='index')
+
 
 def collectionFromReddit():
     ok = 0
@@ -364,15 +427,17 @@ def collectionFromReddit():
                         ok = ok + 1
                     print("geonames:", coordinate)
 
-
-
         print("-------------------------------------")
-        if coordinate!=-1 and len(coordinate)== 5:
-            posts.append([str(post.title), afterClean, str(post.subreddit), ""+str(post.url), str(post.selftext).strip(' \\'),coordinate[0],float(coordinate[1]),float(coordinate[2]),coordinate[3],coordinate[4]])
-    posts = pd.DataFrame(posts,columns=['title', 'afterClean', 'subreddit', 'url', 'body','location','longitude','latitude','contryName','contryCode'])
-    print(ok,"Trouvés sur",limit)
-    posts.to_json("fic.json", orient='index')
+        if coordinate!=-1 and len(coordinate)== 6:
+            posts.append([str(post.title), afterClean, str(post.subreddit), ""+str(post.url), str(post.selftext).strip(' \\'),coordinate[0],float(coordinate[1]),float(coordinate[2]),coordinate[3],coordinate[4], coordinate[5]])
 
+            # if coordinate[4] == "US":
+            #     addInUsa(afterClean)
+
+    posts = pd.DataFrame(posts,columns=['title', 'afterClean', 'subreddit', 'url', 'body','location','longitude','latitude','contryName','contryCode','name'])
+    print(ok,"Trouvés sur",limit)
+    posts.to_json("fusion.json", orient='index')
+    fusion()
 
 collectionFromReddit()
 
