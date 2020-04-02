@@ -11,16 +11,16 @@
 			include("header.php");
 		?>
 
-		<div class='container-fluid'>
-			<div class='row pt-2'>
-				<div class='mx-auto mb-5 col-md-9 px-3'>
+		<div class='container-fluid' >
+			<div class='row pt-1' >
+				<div class='mx-auto mb-0 col-md-9 px-3'>
 					<div id='map' style='width: 100%; height: 600px;'></div>
 				</div>
 
-				<div class='col-md-3 px-3 bg-secondary text-light'>
+				<div class='col-md-3 px-3 bg-secondary text-light overflow-auto'style='max-height: 600px'>
 					<div>
 						<a id='img' href='https://www.cartograf.fr/images/map/monde-satellites/carte_monde_satellite_topographie.jpg' target='_blank'>
-							<img class='pt-2 mb-3' style='width: 100%; height: 200px;' src='https://www.cartograf.fr/images/map/monde-satellites/carte_monde_satellite_topographie.jpg'>
+							<img class='pt-2 mb-3' style='width: 100%; height: auto;' src='https://www.cartograf.fr/images/map/monde-satellites/carte_monde_satellite_topographie.jpg'>
 						</a>
 					</div>
 					<div id='title'>
@@ -48,7 +48,8 @@
 	</body>
 
 	<script type='text/javascript'>
-		var map = L.map('map').setView([51.505, -0.09], 2);
+		var map = L.map('map').setView([35.505, -0.09], 2);
+		map.options.minZoom = 2;
 
 		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
