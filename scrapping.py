@@ -253,11 +253,11 @@ def geoNamesSearch(lieu):
     lieu = unidecode.unidecode(lieu)    #pour retirer les accents !attention tester les cédilles
 
     api = "http://api.geonames.org/searchJSON?q="+lieu+"&maxRows=1&username=projet_TER_reddit"
-    print(api)
+    # print(api)
 
     with urllib.request.urlopen(api) as url:
         data = json.loads(url.read().decode())
-    print("Taille:", len(data))
+    # print("Taille:", len(data))
     if data['totalResultsCount'] == 0:
         return -1
 
