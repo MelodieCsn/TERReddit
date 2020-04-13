@@ -58,7 +58,7 @@
 	    $().ready(function(){
 	    	var markers = L.markerClusterGroup(); //on crée le cluster
 
-	    	$.getJSON("lieu.json",function(data){
+	    	$.getJSON("fusion.json",function(data){
 	    		$.each(data,function(index,objet){
 	    			var m = L.marker([objet.latitude, objet.longitude])
 	    			.bindPopup(objet.afterClean)
