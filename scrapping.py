@@ -168,7 +168,6 @@ def cleanTitle(title, step):
                 if indice < 0:
                     indice = title.find("*")
 
-
         if indice >=0 and ((indice-1)>=0 and not title[indice-1].isalpha()) and ((indice+1)<len(title) and not title[indice+1].isalpha()):
             chain1 = str(title[:indice])
             chain2 = str(title[indice+1:])
@@ -196,6 +195,8 @@ def cleanTitle(title, step):
             return title
         elif (indice + 1) == len(title) and (indice-1)>= 0 and  not title[indice - 1].isalpha():
             title = title[:-2]
+        elif (indice == 0) and (indice + 1 ) < len(title) and  not title[indice + 1].isalpha():
+            title = title[1:]
         print("After clean :", title)
 
     return title
@@ -439,5 +440,9 @@ def collectionFromReddit():
     posts.to_json("fusion.json", orient='index')
     fusion()
 
-collectionFromReddit()
+#collectionFromReddit()
 
+
+lexical = nltk.word_tokenize("National Parc of Jacques-Cartier")
+lexical = nltk.pos_tag(lexical)
+print("lexical:",lexical)
