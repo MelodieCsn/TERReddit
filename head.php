@@ -15,6 +15,8 @@
 <script src="./leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
 
+<!-- Icones -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 
 <meta charset="utf-8">
