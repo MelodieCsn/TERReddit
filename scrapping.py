@@ -429,12 +429,12 @@ def collectionFromReddit():
 
         # print("-------------------------------------")
         if coordinate!=-1 and len(coordinate)== 6:
-            posts.append([str(post.title), afterClean, str(post.subreddit), ""+str(post.url), str(post.selftext).strip(' \\'),coordinate[0],float(coordinate[1]),float(coordinate[2]),coordinate[3],coordinate[4], coordinate[5]])
-
+            posts.append([str(post.title), afterClean, str(post.subreddit), ""+str(post.url), str(post.selftext).strip(' \\'),coordinate[0],float(coordinate[1]),float(coordinate[2]),coordinate[3],coordinate[4], coordinate[5],True])
+            # posts.append(["True"])
             # if coordinate[4] == "US":
             #     addInUsa(afterClean)
 
-    posts = pd.DataFrame(posts,columns=['title', 'afterClean', 'subreddit', 'url', 'body','location','longitude','latitude','contryName','contryCode','name'])
+    posts = pd.DataFrame(posts,columns=['title', 'afterClean', 'subreddit', 'url', 'body','location','longitude','latitude','contryName','contryCode','name','test'])
     print(ok,"Trouvés sur",limit)
     posts.to_json("fusion.json", orient='index')
     fusion()
