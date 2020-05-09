@@ -10,6 +10,7 @@ phrase_tokens = nltk.word_tokenize(phrase)
 print("\n La phrase, mot par mot \n")
 print(phrase_tokens)
 
+# Heuristique IN : verifie si le mot "in" est present dans la phrase et recupere l'indice
 in_exist = False
 
 for mot in phrase_tokens:
@@ -17,11 +18,12 @@ for mot in phrase_tokens:
         in_exist = True
         in_indice = phrase_tokens.index("in")
 
-#Attribution des POS
+#Attribution des POS (classe grammaticale)
 phrase_tagged = nltk.pos_tag(phrase_tokens)
 print("\n Les mots est leur tag \n")
 print(phrase_tagged)
 
+# Heuristique IN : teste de cette heuristique, pas encore au point
 if in_exist == True:
     if phrase_tagged[in_indice+1][1] == "NNP":
         print("in",in_indice)
@@ -32,6 +34,7 @@ if in_exist == True:
             combi = phrase_tokens.index("in")+1
             print("LA")
 
+# Heuristique principale
 else:
     # remplacement de "Mt" par "Mount"
     possibilityList = ["Mt","MT","mT","mt"]
@@ -77,36 +80,50 @@ else:
     mots = locateFormed(loc)
     print("Mot utiles pour combinaison :", mots.split(), "\n")
 
-
+# Creation des combinaisons de mots en fonction d'un pivot (dernier mot de la combinaison) et de la taille de la combinaison
     def formeCombi(taille,pivot):
         global combi
-        if pivot > len(mots.split()):
-            pivot = 0
-            taille += 1
-
         combi = mots.split()[pivot-(taille-1)]
-        for i in range (pivot-(taille-2), pivot+1):
+        for i in range(pivot-(taille-2), pivot+1):
             combi += " "
             combi += mots.split()[i]
 
 
     # Combinaison et recherche Geoname
+    # si ensemble de mots utiles different de 1 alors on va creer toutes les combinaisons possibles
     if len(mots.split()) != 1:
         tailleCombi = 2
-        pivotCombi = 1
+        pivotCombi = tailleCombi-1
         combi = mots.split()[0] + " " + mots.split()[1]
         print("taille :",tailleCombi)
         print("pivot :",pivotCombi)
 
+        # Tant que aucune combinaison retourne un resultat, alors nous continuons a creer des nouveaux
         while geoNamesSearch(combi) == -1 and tailleCombi < len(mots.split()):
             print("La combinaison est :", combi, "\n")
             pivotCombi += 1
+            if pivotCombi == len(mots.split()):
+                pivotCombi = tailleCombi
+                tailleCombi += 1
             print("taille :", tailleCombi)
             print("pivot :", pivotCombi)
             formeCombi(tailleCombi,pivotCombi)
 
+        print("La combinaison est :", combi, "\n")
+
+        # Si les candidats composes de plusieurs mot ne retourne rien, on teste chaque mot, un par un
+        cpt = 0
+        if geoNamesSearch(combi) == -1:
+            print("\nAucun candidat composé de plusieurs mots n'avait de solution, passage au candidat composé d'un seul mot :\n")
+            while geoNamesSearch(combi) == -1 and cpt < len(mots.split()):
+                combi = mots.split()[cpt]
+                print("Le candidat est :",combi)
+                cpt += 1
+    # Si il n'y a qu'un mot utile
     else:
         combi = mots.split()
 
-print("Combinaison final :",combi,"\n")
+
+
+print("\nCombinaison final :",combi,"\n")
 print("Geoname :", geoNamesSearch(combi))

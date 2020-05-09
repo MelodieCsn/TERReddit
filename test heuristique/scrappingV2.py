@@ -379,7 +379,7 @@ def collectionFromReddit():
     ml_subreddit = reddit.subreddit('EarthPorn')
     for post in ml_subreddit.hot(limit=limit):
         print("Original title :",post.title)
-        step =1
+        step = 1
         afterClean = existNameSocialNetwork(deepcopy(post.title))
         afterClean=cleanTitle(afterClean,step)
         print("It's cleaned ?",isClean(afterClean))
